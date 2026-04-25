@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>香典返しリスト管理</title>
+<style>
+  :root {
+    --primary: #5b3a6e;
+    --primary-light: #7a5290;
+    --primary-dark: #3d2549;
+    --accent: #b8860b;
+    --done: #2d7a4f;
+    --done-bg: #e8f5ee;
+    --pending: #a0522d;
+    --pending-bg: #fdf0e8;
+    --bg: #faf8fc;
+    --card: #ffffff;
+    --border: #e0d8e8;
+    --text: #2c2233;
+    --text-muted: #7a6e87;
+    --shadow: 0 2px 8px rgba(91,58,110,0.10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Hiragino Kaku Gothic ProN', 'メイリオ', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  header {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+    color: #fff;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  }
+  header h1 { font-size: 1.3rem; font-weight: 700; letter-spacing: 0.05em; }
+  header .subtitle { font-size: 0.78rem; opacity: 0.8; margin-top: 2px; }
+  .header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .btn {
+    padding: 7px 14px; border: none; border-radius: 6px; cursor: pointer;
+    font-size: 0.82rem; font-family: inherit; font-weight: 600;
+    display: inline-flex; align-items: center; gap: 5px; transition: all 0.15s;
+  }
+  .btn-white { background: rgba(255,255,255,0.18); color: #fff; border: 1px solid rgba(255,255,255,0.35); }
+  .btn-white:hover { background: rgba(255,255,255,0.28); }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: var(--primary-light); }
+  .btn-accent { background: var(--accent); color: #fff; }
+  .btn-accent:hover { background: #a07608; }
+  .btn-danger { background: #c0392b; color: #fff; }
+  .btn-danger:hover { background: #a93226; }
+  .btn-success { background: var(--done); color: #fff; }
+  .btn-success:hover { background: #23603e; }
+  .btn-sm { padding: 4px 10px; font-size: 0.76rem; }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 20px 16px; }
+
+  /* サマリーカード */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .summary-card {
+    background: var(--card);
+    border-radius: 10px;
+    padding: 14px 16px;
+    box-shadow: var(--shadow);
+    border-left: 4px solid var(--primary);
+  }
+  .summary-card.done { border-left-color: var(--done); }
+  .summary-card.pending { border-left-color: var(--pending); }
+  .summary-card.amount { border-left-color: var(--accent); }
+  .summary-card .label { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px; }
+  .summary-card .value { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+  .summary-card.done .value { color: var(--done); }
+  .summary-card.pending .value { color: var(--pending); }
+  .summary-card.amount .value { font-size: 1.1rem; color: var(--accent); }
+
+  /* 検索・フィルタ */
+  .toolbar {
+    background: var(--card);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+  .toolbar input, .toolbar select {
+    padding: 7px 10px; border: 1px solid var(--border); border-radius: 6px;
+    font-size: 0.82rem; font-family: inherit; background: var(--bg);
+    color: var(--text);
+  }
+  .toolbar input:focus, .toolbar select:focus {
+    outline: 2px solid var(--primary-light); border-color: var(--primary-light);
+  }
+  .toolbar input[type=text] { flex: 1; min-width: 160px; }
+
+  /* テーブル */
+  .table-wrap { background: var(--card); border-radius: 10px; box-shadow: var(--shadow); overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+  thead th {
+    background: var(--primary);
+    color: #fff;
+    padding: 10px 10px;
+    text-align: left;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    letter-spacing: 0.03em;
+  }
+  thead th:hover { background: var(--primary-light); }
+  thead th .sort-icon { margin-left: 4px; opacity: 0.6; font-size: 0.7rem; }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; cursor: pointer; }
+  tbody tr:hover { background: #f5f0fa; }
+  tbody td { padding: 9px 10px; vertical-align: middle; }
+
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 12px;
+    font-size: 0.72rem; font-weight: 600; white-space: nowrap;
+  }
+  .badge-done { background: var(--done-bg); color: var(--done); }
+  .badge-pending { background: var(--pending-bg); color: var(--pending); }
+
+  .amount-cell { text-align: right; font-weight: 600; color: var(--accent); white-space: nowrap; }
+  .name-cell { font-weight: 600; }
+  .furigana { font-size: 0.7rem; color: var(--text-muted); }
+  .actions-cell { white-space: nowrap; display: flex; gap: 4px; }
+
+  /* プレビューモーダル */
+  .preview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 18px; margin-bottom: 6px; }
+  .preview-item { display: flex; flex-direction: column; gap: 3px; }
+  .preview-item.full { grid-column: 1 / -1; }
+  .preview-label { font-size: 0.72rem; font-weight: 600; color: var(--text-muted); }
+  .preview-value { font-size: 0.88rem; color: var(--text); padding: 5px 8px; background: var(--bg); border-radius: 5px; min-height: 28px; word-break: break-all; }
+  .preview-value.empty { color: var(--text-muted); font-style: italic; }
+  .preview-name { font-size: 1.1rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 2px solid var(--border); }
+
+  /* モーダル */
+  .overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(30,20,40,0.55); z-index: 100;
+    align-items: center; justify-content: center; padding: 16px;
+  }
+  .overlay.active { display: flex; }
+  .modal {
+    background: var(--card); border-radius: 14px; padding: 28px 26px;
+    width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+  }
+  .modal h2 { font-size: 1.1rem; color: var(--primary-dark); margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-group label { font-size: 0.78rem; font-weight: 600; color: var(--text-muted); }
+  .form-group input, .form-group select, .form-group textarea {
+    padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px;
+    font-size: 0.85rem; font-family: inherit; background: var(--bg); color: var(--text);
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    outline: 2px solid var(--primary-light); border-color: var(--primary-light);
+  }
+  .form-group textarea { resize: vertical; min-height: 60px; }
+  .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+
+  /* 削除確認 */
+  .confirm-modal { max-width: 360px; text-align: center; }
+  .confirm-modal p { color: var(--text-muted); margin-bottom: 20px; }
+  .confirm-modal .name-highlight { font-weight: 700; color: var(--text); font-size: 1rem; }
+
+  /* インポート */
+  .import-area {
+    border: 2px dashed var(--border); border-radius: 8px; padding: 20px;
+    text-align: center; cursor: pointer; transition: border-color 0.2s;
+    color: var(--text-muted); font-size: 0.85rem; margin-bottom: 12px;
+  }
+  .import-area:hover { border-color: var(--primary); color: var(--primary); }
+  .import-area input[type=file] { display: none; }
+
+  /* 空状態 */
+  .empty-state { text-align: center; padding: 50px 20px; color: var(--text-muted); }
+  .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+  .empty-state p { font-size: 0.9rem; }
+
+  /* ページネーション */
+  .pagination { display: flex; justify-content: center; align-items: center; gap: 8px; padding: 14px; }
+  .page-btn {
+    width: 32px; height: 32px; border-radius: 6px; border: 1px solid var(--border);
+    background: var(--card); cursor: pointer; font-size: 0.82rem; display: flex;
+    align-items: center; justify-content: center; transition: all 0.15s; color: var(--text);
+  }
+  .page-btn:hover, .page-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+  .page-btn:disabled { opacity: 0.35; cursor: default; }
+
+  /* 印刷 */
+  @media print {
+    header .header-actions, .toolbar .btn, .actions-cell, .pagination { display: none !important; }
+    .container { padding: 0; }
+    body { background: #fff; }
+    .summary-grid { break-inside: avoid; }
+    .table-wrap { box-shadow: none; border: 1px solid #ccc; }
+  }
+
+  @media (max-width: 680px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .form-group.full { grid-column: 1; }
+    thead th:nth-child(n+5):not(:last-child) { display: none; }
+    tbody td:nth-child(n+5):not(:last-child) { display: none; }
+  }
+
+  .toast {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: #333; color: #fff; padding: 10px 20px; border-radius: 8px;
+    font-size: 0.85rem; z-index: 999; opacity: 0; transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>🪷 香典返しリスト</h1>
+    <div class="subtitle">ご葬儀・ご法要の香典返し管理</div>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-white" onclick="openImport()">📥 インポート</button>
+    <button class="btn btn-white" onclick="exportJSON()">📤 JSON保存</button>
+    <button class="btn btn-white" onclick="exportCSV()">📊 CSV出力</button>
+    <button class="btn btn-white" onclick="window.print()">🖨️ 印刷</button>
+    <button class="btn btn-accent" onclick="openAdd()">＋ 新規追加</button>
+  </div>
+</header>
+
+<div class="container">
+  <!-- サマリー -->
+  <div class="summary-grid" id="summaryGrid"></div>
+
+  <!-- ツールバー -->
+  <div class="toolbar">
+    <div style="position:relative;display:flex;align-items:center;">
+      <input type="text" id="searchInput" placeholder="🔍 氏名・フリガナ・住所で検索..." oninput="applyFilters()" style="padding-right:2rem;">
+      <button onclick="clearSearch()" title="クリア" style="position:absolute;right:4px;background:none;border:none;cursor:pointer;font-size:1rem;color:#888;line-height:1;padding:2px 4px;">✕</button>
+    </div>
+    <select id="filterTanto" onchange="applyFilters()">
+      <option value="">担当（すべて）</option>
+      <option>公治</option>
+      <option>亜矢</option>
+      <option>幸博</option>
+      <option>千里</option>
+    </select>
+    <select id="filterRelation" onchange="applyFilters()">
+      <option value="">関係（すべて）</option>
+    </select>
+    <select id="filterStatus" onchange="applyFilters()">
+      <option value="">状況（すべて）</option>
+      <option value="済">返礼済</option>
+      <option value="未">返礼未</option>
+    </select>
+    <select id="pageSize" onchange="applyFilters()">
+      <option value="20">20件表示</option>
+      <option value="50">50件表示</option>
+      <option value="100">100件表示</option>
+      <option value="9999">全件表示</option>
+    </select>
+    <button onclick="clearAllFilters()" style="white-space:nowrap;padding:6px 12px;border:1px solid var(--border);border-radius:6px;background:#f5f5f5;color:#555;cursor:pointer;font-size:0.85rem;">絞込クリア</button>
+    <span id="resultCount" style="font-size:0.78rem;color:var(--text-muted);margin-left:auto;"></span>
+  </div>
+
+  <!-- テーブル -->
+  <div class="table-wrap">
+    <table id="mainTable">
+      <thead>
+        <tr>
+          <th onclick="sortBy('name')">氏名 <span class="sort-icon" id="sort-name"></span></th>
+          <th onclick="sortBy('tanto')">担当 <span class="sort-icon" id="sort-tanto"></span></th>
+          <th onclick="sortBy('relation')">関係 <span class="sort-icon" id="sort-relation"></span></th>
+          <th onclick="sortBy('amount')">香典金額 <span class="sort-icon" id="sort-amount"></span></th>
+          <th onclick="sortBy('returnStatus')">返礼状況 <span class="sort-icon" id="sort-returnStatus"></span></th>
+          <th onclick="sortBy('returnItem')">返礼品 <span class="sort-icon" id="sort-returnItem"></span></th>
+          <th onclick="sortBy('returnDate')">送付日 <span class="sort-icon" id="sort-returnDate"></span></th>
+          <th onclick="sortBy('address')">住所 <span class="sort-icon" id="sort-address"></span></th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+    <div id="emptyState" class="empty-state" style="display:none">
+      <div class="icon">📋</div>
+      <p>データがありません。「新規追加」から登録してください。</p>
+    </div>
+    <div class="pagination" id="pagination"></div>
+  </div>
+</div>
+
+<!-- 追加・編集モーダル -->
+<div class="overlay" id="editOverlay" onclick="if(event.target===this)closeEdit()">
+  <div class="modal">
+    <h2 id="modalTitle">新規追加</h2>
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="f_name">氏名 <span style="color:#c0392b">*</span></label>
+        <input type="text" id="f_name" placeholder="山田 太郎">
+      </div>
+      <div class="form-group">
+        <label for="f_furigana">フリガナ</label>
+        <input type="text" id="f_furigana" placeholder="ヤマダ タロウ">
+      </div>
+      <div class="form-group">
+        <label for="f_tanto">担当 <span style="color:#c0392b">*</span></label>
+        <select id="f_tanto">
+          <option value="">選択してください</option>
+          <option>公治</option>
+          <option>亜矢</option>
+          <option>幸博</option>
+          <option>千里</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="f_relation_select">関係</label>
+        <select id="f_relation_select" onchange="onRelationSelectChange()">
+          <option value="">—</option>
+          <option>会社</option>
+          <option>友人</option>
+          <option>親族</option>
+          <option>近所</option>
+          <option>学校</option>
+          <option>趣味・習い事</option>
+          <option value="__custom__">その他（自由入力）</option>
+        </select>
+        <input type="text" id="f_relation_custom" placeholder="自由に入力..." style="display:none;margin-top:5px">
+      </div>
+      <div class="form-group">
+        <label for="f_amount">香典金額（円）</label>
+        <input type="number" id="f_amount" placeholder="10000" min="0" step="1000">
+      </div>
+      <div class="form-group full">
+        <label for="f_address">住所</label>
+        <input type="text" id="f_address" placeholder="東京都〇〇区...">
+      </div>
+      <div class="form-group">
+        <label for="f_phone">電話番号</label>
+        <input type="tel" id="f_phone" placeholder="090-0000-0000">
+      </div>
+      <div class="form-group">
+        <label for="f_receiveDate">受付日</label>
+        <input type="date" id="f_receiveDate">
+      </div>
+      <div class="form-group">
+        <label for="f_returnStatus">返礼状況</label>
+        <select id="f_returnStatus">
+          <option value="未">未（返礼未）</option>
+          <option value="済">済（返礼済）</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="f_returnItem">返礼品</label>
+        <select id="f_returnItem">
+          <option value="">—（未選択）</option>
+          <option value="基本セット品">基本セット品</option>
+          <option value="別の品">別の品（詳細は備考へ）</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="f_returnAmount">返礼品金額（円）</label>
+        <input type="number" id="f_returnAmount" placeholder="" min="0" step="100">
+      </div>
+      <div class="form-group">
+        <label for="f_deliveryMethod">送付方法</label>
+        <select id="f_deliveryMethod">
+          <option value="">—</option>
+          <option>手渡し</option>
+          <option>郵送</option>
+          <option>宅配便</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="f_returnDate">送付日</label>
+        <input type="date" id="f_returnDate">
+      </div>
+      <div class="form-group full">
+        <label for="f_note">備考</label>
+        <textarea id="f_note" placeholder="特記事項など..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" style="background:var(--border);color:var(--text)" onclick="closeEdit()">キャンセル</button>
+      <button class="btn btn-primary" onclick="saveEntry()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- プレビューモーダル -->
+<div class="overlay" id="previewOverlay" onclick="if(event.target===this)closePreview()">
+  <div class="modal" style="max-width:520px">
+    <div class="preview-name" id="preview_name"></div>
+    <div class="preview-grid" id="previewGrid"></div>
+    <div class="modal-footer">
+      <button class="btn" style="background:var(--border);color:var(--text)" onclick="closePreview()">閉じる</button>
+      <button class="btn btn-primary" id="previewEditBtn" onclick="closePreview()">✏️ 編集する</button>
+    </div>
+  </div>
+</div>
+
+<!-- 返礼済み確認モーダル -->
+<div class="overlay" id="statusOverlay" onclick="if(event.target===this)closeStatusConfirm()">
+  <div class="modal confirm-modal">
+    <h2>返礼状況の変更</h2>
+    <p id="statusConfirmMsg"></p>
+    <p class="name-highlight" id="statusConfirmName"></p>
+    <div class="modal-footer" style="justify-content:center">
+      <button class="btn" style="background:var(--border);color:var(--text)" onclick="closeStatusConfirm()">キャンセル</button>
+      <button id="statusConfirmBtn" class="btn btn-success" onclick="confirmToggleStatus()"></button>
+    </div>
+  </div>
+</div>
+
+<!-- 削除確認モーダル -->
+<div class="overlay" id="deleteOverlay" onclick="if(event.target===this)closeDelete()">
+  <div class="modal confirm-modal">
+    <h2>削除の確認</h2>
+    <p>以下のデータを削除しますか？<br>この操作は元に戻せません。</p>
+    <p class="name-highlight" id="deleteName"></p>
+    <div class="modal-footer" style="justify-content:center">
+      <button class="btn" style="background:var(--border);color:var(--text)" onclick="closeDelete()">キャンセル</button>
+      <button class="btn btn-danger" onclick="confirmDelete()">削除する</button>
+    </div>
+  </div>
+</div>
+
+<!-- インポートモーダル -->
+<div class="overlay" id="importOverlay" onclick="if(event.target===this)closeImport()">
+  <div class="modal" style="max-width:440px">
+    <h2>📥 データのインポート</h2>
+    <p style="font-size:0.83rem;color:var(--text-muted);margin-bottom:14px">
+      このアプリで出力したJSONファイルを読み込みます。<br>
+      既存データに<strong>追加</strong>するか、<strong>上書き</strong>するか選べます。
+    </p>
+    <label class="import-area" for="importFile">
+      <div style="font-size:1.8rem;margin-bottom:6px">📂</div>
+      <div>クリックしてJSONファイルを選択</div>
+      <div style="font-size:0.74rem;margin-top:4px;opacity:0.7">または ここにドラッグ＆ドロップ</div>
+      <input type="file" id="importFile" accept=".json" onchange="handleImportFile(event)">
+    </label>
+    <div id="importPreview" style="font-size:0.82rem;color:var(--text-muted);margin-bottom:12px;display:none"></div>
+    <div style="display:flex;gap:10px;margin-bottom:16px">
+      <label style="display:flex;align-items:center;gap:6px;font-size:0.83rem;cursor:pointer">
+        <input type="radio" name="importMode" value="add" checked> 既存データに追加
+      </label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:0.83rem;cursor:pointer">
+        <input type="radio" name="importMode" value="overwrite"> 上書き（既存を削除）
+      </label>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" style="background:var(--border);color:var(--text)" onclick="closeImport()">キャンセル</button>
+      <button class="btn btn-primary" id="importBtn" onclick="doImport()" disabled>インポート</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ---- データ管理 ----
+const STORAGE_KEY = 'koden_gaeshi_v1';
+let records = [];
+let editId = null;
+let deleteId = null;
+let importData = null;
+let sortKey = 'name';
+let sortDir = 1;
+let currentPage = 1;
+
+function load() {
+  try { records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+  catch { records = []; }
+}
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+}
+function genId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+
+// ---- フィルタ・ソート ----
+function getFiltered() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const tanto = document.getElementById('filterTanto').value;
+  const rel = document.getElementById('filterRelation').value;
+  const st = document.getElementById('filterStatus').value;
+  return records.filter(r => {
+    const matchQ = !q || [r.name, r.furigana, r.address].some(v => (v||'').toLowerCase().includes(q));
+    const matchTanto = !tanto || r.tanto === tanto;
+    const matchRel = !rel || r.relation === rel;
+    const matchSt = !st || r.returnStatus === st;
+    return matchQ && matchTanto && matchRel && matchSt;
+  }).sort((a, b) => {
+    let va = a[sortKey] ?? '', vb = b[sortKey] ?? '';
+    if (sortKey === 'amount' || sortKey === 'returnAmount') {
+      va = Number(va) || 0; vb = Number(vb) || 0;
+      if (va < vb) return -sortDir;
+      if (va > vb) return sortDir;
+      return 0;
+    }
+    return String(va).localeCompare(String(vb), 'ja') * sortDir;
+  });
+}
+
+function sortBy(key) {
+  if (sortKey === key) sortDir *= -1;
+  else { sortKey = key; sortDir = 1; }
+  currentPage = 1;
+  render();
+}
+
+function applyFilters() { currentPage = 1; render(); }
+function clearSearch() { document.getElementById('searchInput').value = ''; applyFilters(); }
+function clearAllFilters() {
+  ['searchInput','filterTanto','filterRelation','filterStatus'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  applyFilters();
+}
+
+// ---- レンダリング ----
+function render() {
+  const filtered = getFiltered();
+  const pageSize = parseInt(document.getElementById('pageSize').value);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  if (currentPage > totalPages) currentPage = totalPages;
+  const start = (currentPage - 1) * pageSize;
+  const page = filtered.slice(start, start + pageSize);
+
+  document.getElementById('resultCount').textContent = `${filtered.length}件 / 全${records.length}件`;
+
+  // 関係フィルタードロップダウンを登録済みの値で動的更新
+  const sel = document.getElementById('filterRelation');
+  const curVal = sel.value;
+  const relations = [...new Set(records.map(r => r.relation).filter(Boolean))].sort();
+  sel.innerHTML = '<option value="">関係（すべて）</option>' +
+    relations.map(r => `<option${r === curVal ? ' selected' : ''}>${esc(r)}</option>`).join('');
+  if (!relations.includes(curVal)) sel.value = '';
+
+  // サマリー
+  const total = records.reduce((s, r) => s + (Number(r.amount) || 0), 0);
+  const done = records.filter(r => r.returnStatus === '済').length;
+  const pending = records.length - done;
+  const returnTotal = records.filter(r => r.returnStatus === '済').reduce((s, r) => s + (Number(r.returnAmount) || 0), 0);
+  document.getElementById('summaryGrid').innerHTML = `
+    <div class="summary-card"><div class="label">登録件数</div><div class="value">${records.length}件</div></div>
+    <div class="summary-card amount"><div class="label">香典合計</div><div class="value">¥${total.toLocaleString()}</div></div>
+    <div class="summary-card done"><div class="label">返礼済</div><div class="value">${done}件</div></div>
+    <div class="summary-card pending"><div class="label">返礼未</div><div class="value">${pending}件</div></div>
+    <div class="summary-card amount"><div class="label">返礼品合計</div><div class="value">¥${returnTotal.toLocaleString()}</div></div>
+  `;
+
+  // ソートアイコン更新
+  document.querySelectorAll('.sort-icon').forEach(el => el.textContent = '');
+  const si = document.getElementById('sort-' + sortKey);
+  if (si) si.textContent = sortDir === 1 ? '▲' : '▼';
+
+  // テーブル
+  const tbody = document.getElementById('tableBody');
+  if (page.length === 0) {
+    tbody.innerHTML = '';
+    document.getElementById('emptyState').style.display = '';
+  } else {
+    document.getElementById('emptyState').style.display = 'none';
+    tbody.innerHTML = page.map(r => `
+      <tr onclick="openPreview('${r.id}')">
+        <td class="name-cell">
+          ${esc(r.name)}
+          ${r.furigana ? `<div class="furigana">${esc(r.furigana)}</div>` : ''}
+        </td>
+        <td>${esc(r.tanto)}</td>
+        <td>${esc(r.relation)}</td>
+        <td class="amount-cell">${r.amount ? '¥' + Number(r.amount).toLocaleString() : '—'}</td>
+        <td><span class="badge ${r.returnStatus === '済' ? 'badge-done' : 'badge-pending'}">${r.returnStatus === '済' ? '✓ 返礼済' : '⏳ 返礼未'}</span></td>
+        <td>${esc(r.returnItem)}</td>
+        <td>${esc(r.returnDate)}</td>
+        <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(r.address)}">${esc(r.address)}</td>
+        <td onclick="event.stopPropagation()"><div class="actions-cell">
+          <button class="btn btn-sm btn-primary" onclick="openEdit('${r.id}')">編集</button>
+          <button class="btn btn-sm" style="background:#f0e8f5;color:var(--primary)" onclick="toggleStatus('${r.id}')">${r.returnStatus === '済' ? '未に戻す' : '済にする'}</button>
+          <button class="btn btn-sm btn-danger" onclick="openDelete('${r.id}')">削除</button>
+        </div></td>
+      </tr>
+    `).join('');
+  }
+
+  // ページネーション
+  const pg = document.getElementById('pagination');
+  if (totalPages <= 1) { pg.innerHTML = ''; return; }
+  let html = `<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
+  for (let i = 1; i <= totalPages; i++) {
+    if (totalPages > 7 && Math.abs(i - currentPage) > 2 && i !== 1 && i !== totalPages) {
+      if (i === 2 || i === totalPages - 1) html += `<span style="padding:0 4px">…</span>`;
+      continue;
+    }
+    html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+  }
+  html += `<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>›</button>`;
+  pg.innerHTML = html;
+}
+
+function goPage(p) { currentPage = p; render(); }
+function esc(v) { return (v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+// ---- CRUD ----
+function openAdd() {
+  editId = null;
+  document.getElementById('modalTitle').textContent = '新規追加';
+  clearForm();
+  document.getElementById('f_returnStatus').value = '未';
+  document.getElementById('f_receiveDate').value = new Date().toISOString().slice(0,10);
+  document.getElementById('editOverlay').classList.add('active');
+}
+
+function openEdit(id) {
+  editId = id;
+  const r = records.find(x => x.id === id);
+  if (!r) return;
+  document.getElementById('modalTitle').textContent = '編集';
+  document.getElementById('f_name').value = r.name || '';
+  document.getElementById('f_furigana').value = r.furigana || '';
+  document.getElementById('f_tanto').value = r.tanto || '';
+  setRelationField(r.relation || '');
+  document.getElementById('f_amount').value = r.amount || '';
+  document.getElementById('f_address').value = r.address || '';
+  document.getElementById('f_phone').value = r.phone || '';
+  document.getElementById('f_receiveDate').value = r.receiveDate || '';
+  document.getElementById('f_returnStatus').value = r.returnStatus || '未';
+  document.getElementById('f_returnItem').value = r.returnItem || '';
+  document.getElementById('f_returnAmount').value = r.returnAmount || '';
+  document.getElementById('f_deliveryMethod').value = r.deliveryMethod || '';
+  document.getElementById('f_returnDate').value = r.returnDate || '';
+  document.getElementById('f_note').value = r.note || '';
+  document.getElementById('editOverlay').classList.add('active');
+}
+
+function clearForm() {
+  ['f_name','f_furigana','f_tanto','f_amount','f_address','f_phone',
+   'f_receiveDate','f_returnStatus','f_returnItem',
+   'f_deliveryMethod','f_returnDate','f_note'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('f_returnAmount').value = '3000';
+}
+
+function openPreview(id) {
+  const r = records.find(x => x.id === id);
+  if (!r) return;
+  document.getElementById('preview_name').textContent = r.name + (r.furigana ? '　' + r.furigana : '');
+  const fields = [
+    ['担当',       r.tanto],
+    ['関係',       r.relation],
+    ['香典金額',   r.amount ? '¥' + Number(r.amount).toLocaleString() : ''],
+    ['受付日',     r.receiveDate],
+    ['返礼状況',   r.returnStatus === '済' ? '✓ 返礼済' : '⏳ 返礼未'],
+    ['返礼品',     r.returnItem],
+    ['返礼品金額', r.returnAmount ? '¥' + Number(r.returnAmount).toLocaleString() : ''],
+    ['送付方法',   r.deliveryMethod],
+    ['送付日',     r.returnDate],
+    ['電話番号',   r.phone],
+    ['住所',       r.address, true],
+    ['備考',       r.note,    true],
+  ];
+  document.getElementById('previewGrid').innerHTML = fields.map(([label, val, full]) => `
+    <div class="preview-item${full ? ' full' : ''}">
+      <div class="preview-label">${label}</div>
+      <div class="preview-value${val ? '' : ' empty'}">${val ? esc(val) : '—'}</div>
+    </div>
+  `).join('');
+  document.getElementById('previewEditBtn').onclick = () => { closePreview(); openEdit(id); };
+  document.getElementById('previewOverlay').classList.add('active');
+}
+
+function closePreview() {
+  document.getElementById('previewOverlay').classList.remove('active');
+}
+
+function closeEdit() {
+  document.getElementById('editOverlay').classList.remove('active');
+  // 関係フィールドをリセット
+  document.getElementById('f_relation_select').value = '';
+  document.getElementById('f_relation_custom').style.display = 'none';
+  document.getElementById('f_relation_custom').value = '';
+}
+
+function onRelationSelectChange() {
+  const sel = document.getElementById('f_relation_select');
+  const custom = document.getElementById('f_relation_custom');
+  if (sel.value === '__custom__') {
+    custom.style.display = '';
+    custom.focus();
+  } else {
+    custom.style.display = 'none';
+    custom.value = '';
+  }
+}
+
+function setRelationField(val) {
+  const sel = document.getElementById('f_relation_select');
+  const custom = document.getElementById('f_relation_custom');
+  const presets = ['', '会社', '友人', '親族', '近所', '学校', '趣味・習い事'];
+  if (presets.includes(val)) {
+    sel.value = val;
+    custom.style.display = 'none';
+    custom.value = '';
+  } else {
+    sel.value = '__custom__';
+    custom.style.display = '';
+    custom.value = val;
+  }
+}
+
+function getRelationValue() {
+  const sel = document.getElementById('f_relation_select');
+  if (sel.value === '__custom__') return document.getElementById('f_relation_custom').value.trim();
+  return sel.value;
+}
+
+function saveEntry() {
+  const name = document.getElementById('f_name').value.trim();
+  if (!name) { showToast('氏名を入力してください'); document.getElementById('f_name').focus(); return; }
+  const tanto = document.getElementById('f_tanto').value;
+  if (!tanto) { showToast('担当を選択してください'); document.getElementById('f_tanto').focus(); return; }
+  const data = {
+    name, furigana: document.getElementById('f_furigana').value.trim(),
+    tanto: document.getElementById('f_tanto').value,
+    relation: getRelationValue(),
+    amount: document.getElementById('f_amount').value,
+    address: document.getElementById('f_address').value.trim(),
+    phone: document.getElementById('f_phone').value.trim(),
+    receiveDate: document.getElementById('f_receiveDate').value,
+    returnStatus: document.getElementById('f_returnStatus').value,
+    returnItem: document.getElementById('f_returnItem').value.trim(),
+    returnAmount: document.getElementById('f_returnAmount').value,
+    deliveryMethod: document.getElementById('f_deliveryMethod').value,
+    returnDate: document.getElementById('f_returnDate').value,
+    note: document.getElementById('f_note').value.trim(),
+    updatedAt: new Date().toISOString(),
+  };
+  if (editId) {
+    const idx = records.findIndex(r => r.id === editId);
+    if (idx >= 0) records[idx] = { ...records[idx], ...data };
+  } else {
+    records.push({ id: genId(), createdAt: new Date().toISOString(), ...data });
+  }
+  save(); closeEdit(); render();
+  showToast(editId ? '更新しました' : '追加しました');
+}
+
+let statusToggleId = null;
+
+function toggleStatus(id) {
+  const r = records.find(x => x.id === id);
+  if (!r) return;
+  if (r.returnStatus === '未') {
+    // 未→済：確認ダイアログを表示
+    statusToggleId = id;
+    document.getElementById('statusConfirmName').textContent = r.name;
+    document.getElementById('statusConfirmMsg').textContent = '返礼済みに変更しますか？送付日が未入力の場合、本日の日付が自動入力されます。';
+    document.getElementById('statusConfirmBtn').textContent = '済にする';
+    document.getElementById('statusConfirmBtn').className = 'btn btn-success';
+    document.getElementById('statusOverlay').classList.add('active');
+  } else {
+    // 済→未：確認ダイアログを表示
+    statusToggleId = id;
+    document.getElementById('statusConfirmName').textContent = r.name;
+    document.getElementById('statusConfirmMsg').textContent = '返礼済みを取り消しますか？返礼品・金額・送付方法・送付日がクリアされます。';
+    document.getElementById('statusConfirmBtn').textContent = '未に戻す';
+    document.getElementById('statusConfirmBtn').className = 'btn btn-danger';
+    document.getElementById('statusOverlay').classList.add('active');
+  }
+}
+
+function closeStatusConfirm() {
+  document.getElementById('statusOverlay').classList.remove('active');
+  statusToggleId = null;
+}
+
+function confirmToggleStatus() {
+  const r = records.find(x => x.id === statusToggleId);
+  if (!r) return;
+  if (r.returnStatus === '未') {
+    r.returnStatus = '済';
+    if (!r.returnDate) r.returnDate = new Date().toISOString().slice(0, 10);
+  } else {
+    r.returnStatus = '未';
+    r.returnItem = '';
+    r.returnAmount = '';
+    r.deliveryMethod = '';
+    r.returnDate = '';
+  }
+  r.updatedAt = new Date().toISOString();
+  save(); closeStatusConfirm(); render();
+  showToast(`返礼状況を「${r.returnStatus}」に変更しました`);
+}
+
+function openDelete(id) {
+  deleteId = id;
+  const r = records.find(x => x.id === id);
+  document.getElementById('deleteName').textContent = r ? r.name : '';
+  document.getElementById('deleteOverlay').classList.add('active');
+}
+function closeDelete() { document.getElementById('deleteOverlay').classList.remove('active'); }
+function confirmDelete() {
+  records = records.filter(r => r.id !== deleteId);
+  save(); closeDelete(); render();
+  showToast('削除しました');
+}
+
+// ---- エクスポート ----
+async function exportJSON() {
+  const json = JSON.stringify({ version: 1, exportedAt: new Date().toISOString(), records }, null, 2);
+  const name = `香典返しリスト_${today()}.json`;
+  if (window.showSaveFilePicker) {
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: name,
+        types: [{ description: 'JSONファイル', accept: { 'application/json': ['.json'] } }],
+      });
+      const writable = await handle.createWritable();
+      await writable.write(json);
+      await writable.close();
+      showToast('JSONファイルを保存しました');
+      return;
+    } catch (e) { if (e.name === 'AbortError') return; }
+  }
+  const blob = new Blob([json], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click(); URL.revokeObjectURL(a.href);
+  showToast('JSONファイルをダウンロードしました');
+}
+
+async function exportCSV() {
+  const cols = ['氏名','フリガナ','担当','関係','香典金額','住所','電話番号','受付日','返礼状況','返礼品','返礼品金額','送付方法','送付日','備考'];
+  const keys = ['name','furigana','tanto','relation','amount','address','phone','receiveDate','returnStatus','returnItem','returnAmount','deliveryMethod','returnDate','note'];
+  const rows = [cols, ...records.map(r => keys.map(k => `"${(r[k]||'').toString().replace(/"/g,'""')}"`))];
+  const csv = '﻿' + rows.map(r => r.join(',')).join('\r\n');
+  const name = `香典返しリスト_${today()}.csv`;
+  if (window.showSaveFilePicker) {
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: name,
+        types: [{ description: 'CSVファイル', accept: { 'text/csv': ['.csv'] } }],
+      });
+      const writable = await handle.createWritable();
+      await writable.write(csv);
+      await writable.close();
+      showToast('CSVファイルを保存しました');
+      return;
+    } catch (e) { if (e.name === 'AbortError') return; }
+  }
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click(); URL.revokeObjectURL(a.href);
+  showToast('CSVファイルをダウンロードしました');
+}
+
+function today() { return new Date().toISOString().slice(0,10).replace(/-/g,''); }
+
+// ---- インポート ----
+function openImport() {
+  importData = null;
+  document.getElementById('importFile').value = '';
+  document.getElementById('importPreview').style.display = 'none';
+  document.getElementById('importBtn').disabled = true;
+  document.getElementById('importOverlay').classList.add('active');
+}
+function closeImport() { document.getElementById('importOverlay').classList.remove('active'); }
+
+function handleImportFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const json = JSON.parse(ev.target.result);
+      importData = json.records || json;
+      if (!Array.isArray(importData)) throw new Error();
+      const prev = document.getElementById('importPreview');
+      prev.textContent = `✅ ${importData.length}件のデータを認識しました`;
+      prev.style.display = '';
+      document.getElementById('importBtn').disabled = false;
+    } catch {
+      document.getElementById('importPreview').textContent = '❌ 読み込み失敗：正しいJSONファイルを選択してください';
+      document.getElementById('importPreview').style.display = '';
+      importData = null;
+      document.getElementById('importBtn').disabled = true;
+    }
+  };
+  reader.readAsText(file, 'utf-8');
+}
+
+// ドラッグ＆ドロップ
+document.querySelector('.import-area').addEventListener('dragover', e => { e.preventDefault(); });
+document.querySelector('.import-area').addEventListener('drop', e => {
+  e.preventDefault();
+  const file = e.dataTransfer.files[0];
+  if (!file) return;
+  const fakeEvent = { target: { files: [file] } };
+  handleImportFile(fakeEvent);
+});
+
+function doImport() {
+  if (!importData) return;
+  const mode = document.querySelector('input[name=importMode]:checked').value;
+  if (mode === 'overwrite') {
+    records = importData.map(r => ({ ...r, id: r.id || genId() }));
+  } else {
+    const existIds = new Set(records.map(r => r.id));
+    importData.forEach(r => {
+      const entry = { ...r, id: r.id && !existIds.has(r.id) ? r.id : genId() };
+      records.push(entry);
+    });
+  }
+  save(); closeImport(); render();
+  showToast(`${importData.length}件をインポートしました`);
+}
+
+// ---- トースト ----
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// ---- 初期化 ----
+load();
+render();
+
+// 返礼品金額：空欄でスピナー操作した場合のみ3000を起点にする（直接入力は影響しない）
+(function() {
+  const el = document.getElementById('f_returnAmount');
+  el.addEventListener('mousedown', function() {
+    if (!el.value) el._spinnerPending = true;
+  });
+  el.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+      if (!el.value) el._spinnerPending = true;
+    } else {
+      el._spinnerPending = false;
+    }
+  });
+  el.addEventListener('input', function() {
+    if (el._spinnerPending && el.value !== '') { el.value = 3000; el._spinnerPending = false; }
+  });
+})();
+</script>
+</body>
+</html>
