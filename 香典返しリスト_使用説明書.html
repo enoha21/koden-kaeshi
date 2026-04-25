@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>香典返しリスト 使用説明書</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap');
+
+  :root {
+    --purple:     #5b3a6e;
+    --purple-d:   #3d2549;
+    --purple-l:   #7a5290;
+    --purple-bg:  #f5f0fa;
+    --gold:       #b8860b;
+    --green:      #2d7a4f;
+    --green-bg:   #e8f5ee;
+    --orange:     #a0522d;
+    --orange-bg:  #fdf0e8;
+    --gray:       #7a6e87;
+    --border:     #e0d8e8;
+    --bg:         #faf8fc;
+    --text:       #2c2233;
+    --white:      #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'メイリオ', sans-serif;
+    background: #eee;
+    color: var(--text);
+    font-size: 9.5pt;
+    line-height: 1.7;
+  }
+
+  /* ── ページ ── */
+  .page {
+    background: var(--white);
+    width: 210mm;
+    min-height: 297mm;
+    margin: 12mm auto;
+    padding: 0;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+    position: relative;
+    overflow: hidden;
+  }
+  .page-inner { padding: 14mm 16mm 16mm; }
+
+  /* ── 印刷ボタン ── */
+  .print-bar {
+    position: fixed; top: 0; left: 0; right: 0;
+    background: var(--purple-d); color: #fff;
+    padding: 10px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    z-index: 999; font-size: 13px;
+  }
+  .print-bar button {
+    background: var(--gold); color: #fff; border: none;
+    padding: 7px 22px; border-radius: 6px; cursor: pointer;
+    font-size: 13px; font-family: inherit; font-weight: 700;
+  }
+  .print-bar button:hover { background: #9a7008; }
+
+  /* ── 表紙ヘッダー ── */
+  .cover-header {
+    background: linear-gradient(135deg, var(--purple-d) 0%, var(--purple) 100%);
+    color: var(--white);
+    padding: 22px 20px 18px;
+    position: relative;
+    border-bottom: 5px solid var(--gold);
+  }
+  .cover-header .flower { font-size: 32px; vertical-align: middle; margin-right: 10px; }
+  .cover-header h1 { font-size: 18pt; font-weight: 700; display: inline; }
+  .cover-header .sub { font-size: 9pt; opacity: 0.8; margin-top: 4px; }
+  .cover-header .date { font-size: 8pt; opacity: 0.6; margin-top: 2px; }
+
+  /* ── はじめに ── */
+  .intro-box {
+    background: var(--purple-bg);
+    border-left: 4px solid var(--purple);
+    border-radius: 0 6px 6px 0;
+    padding: 10px 14px;
+    margin: 14px 0;
+    font-size: 9pt;
+  }
+
+  /* ── セクションタイトル ── */
+  .section-title {
+    background: var(--purple);
+    color: var(--white);
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-size: 11pt;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 18px 0 10px;
+  }
+  .section-title .num {
+    background: var(--gold);
+    color: var(--white);
+    border-radius: 4px;
+    padding: 1px 8px;
+    font-size: 10.5pt;
+    font-weight: 700;
+    min-width: 26px;
+    text-align: center;
+  }
+
+  /* ── ステップボックス ── */
+  .step-box {
+    background: #ede5f5;
+    border-radius: 8px;
+    padding: 10px 14px 10px 56px;
+    margin: 6px 0;
+    position: relative;
+    min-height: 44px;
+  }
+  .step-box .circle {
+    position: absolute;
+    left: 12px; top: 50%;
+    transform: translateY(-50%);
+    width: 30px; height: 30px;
+    background: var(--purple);
+    color: var(--white);
+    border-radius: 50%;
+    font-size: 13pt; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .step-box .step-title { font-weight: 700; font-size: 9.5pt; color: var(--purple); }
+  .step-box .step-desc  { font-size: 8.5pt; color: var(--text); }
+
+  /* ── 注意書き ── */
+  .note-box {
+    background: var(--orange-bg);
+    border-left: 3px solid var(--orange);
+    padding: 7px 12px;
+    border-radius: 0 5px 5px 0;
+    font-size: 8.5pt;
+    color: var(--orange);
+    margin: 6px 0;
+  }
+  .tip-box {
+    background: #fff8e6;
+    border-left: 3px solid var(--gold);
+    padding: 7px 12px;
+    border-radius: 0 5px 5px 0;
+    font-size: 8.5pt;
+    color: #7a5a00;
+    margin: 6px 0;
+  }
+
+  /* ── 画面モックアップ ── */
+  .mockup-wrap {
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: #e8e0ee;
+    margin: 8px 0;
+  }
+  .mock-browser-bar {
+    background: #d0c4dc;
+    padding: 4px 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 7.5pt;
+  }
+  .mock-tab {
+    background: var(--white);
+    padding: 2px 10px;
+    border-radius: 4px 4px 0 0;
+    font-size: 7.5pt;
+  }
+  .mock-header {
+    background: linear-gradient(135deg, var(--purple-d), var(--purple));
+    color: var(--white);
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 8pt;
+    font-weight: 700;
+  }
+  .mock-header-btns { display: flex; gap: 4px; }
+  .mock-btn {
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: var(--white);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 6.5pt;
+  }
+  .mock-btn.gold { background: var(--gold); border-color: var(--gold); }
+
+  .mock-summary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+    padding: 7px;
+    background: var(--bg);
+  }
+  .mock-card {
+    background: var(--white);
+    border-radius: 5px;
+    padding: 6px 8px;
+    border-left: 3px solid var(--purple);
+    font-size: 7pt;
+  }
+  .mock-card.green  { border-left-color: var(--green); }
+  .mock-card.orange { border-left-color: var(--orange); }
+  .mock-card.gold   { border-left-color: var(--gold); }
+  .mock-card .c-label { color: var(--gray); font-size: 6pt; }
+  .mock-card .c-val   { font-weight: 700; font-size: 9pt; }
+  .mock-card.green  .c-val { color: var(--green); }
+  .mock-card.orange .c-val { color: var(--orange); }
+  .mock-card.gold   .c-val { color: var(--gold); font-size: 8pt; }
+
+  .mock-toolbar {
+    display: flex;
+    gap: 4px;
+    padding: 5px 7px;
+    background: var(--bg);
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .mock-search-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 1;
+  }
+  .mock-search {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 3px 22px 3px 8px;
+    font-size: 7pt;
+    color: var(--gray);
+    width: 100%;
+  }
+  .mock-search-x {
+    position: absolute;
+    right: 5px;
+    color: #aaa;
+    font-size: 7.5pt;
+    font-weight: 700;
+  }
+  .mock-select {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 3px 6px;
+    font-size: 7pt;
+    color: var(--gray);
+  }
+  .mock-clear-btn {
+    background: #f5f5f5;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 3px 7px;
+    font-size: 6.5pt;
+    color: #555;
+    white-space: nowrap;
+  }
+
+  .mock-table { width: 100%; border-collapse: collapse; font-size: 7pt; }
+  .mock-table th {
+    background: var(--purple);
+    color: var(--white);
+    padding: 4px 5px;
+    text-align: left;
+    font-weight: 700;
+  }
+  .mock-table td { padding: 4px 5px; border-bottom: 1px solid var(--border); cursor: pointer; }
+  .mock-table tr:nth-child(even) td { background: var(--purple-bg); }
+  .mock-table tr td:first-child { text-decoration: underline; color: var(--purple); }
+  .badge-done { background: var(--green-bg); color: var(--green); padding: 1px 5px; border-radius: 8px; font-size: 6.5pt; font-weight: 700; }
+  .badge-pend { background: var(--orange-bg); color: var(--orange); padding: 1px 5px; border-radius: 8px; font-size: 6.5pt; font-weight: 700; }
+  .mock-action-btn {
+    background: var(--purple-bg); color: var(--purple);
+    padding: 1px 5px; border-radius: 3px; font-size: 6pt; font-weight: 700;
+    display: inline-block; margin-right: 2px;
+  }
+  .mock-action-btn.g { background: var(--green-bg); color: var(--green); }
+  .mock-action-btn.r { background: #fde8e8; color: #c0392b; }
+
+  /* 吹き出し注釈 */
+  .annot {
+    display: inline-block;
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffc107;
+    border-radius: 4px;
+    padding: 1px 7px;
+    font-size: 7pt;
+    font-weight: 700;
+    margin: 2px 0;
+  }
+  .annot-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding: 3px 7px;
+    background: var(--bg);
+  }
+
+  /* ── フォームモックアップ ── */
+  .form-mockup {
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--white);
+    margin: 8px 0;
+  }
+  .form-mock-header {
+    background: var(--purple);
+    color: var(--white);
+    padding: 7px 14px;
+    font-size: 9pt;
+    font-weight: 700;
+  }
+  .form-mock-body {
+    padding: 10px 12px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 12px;
+  }
+  .form-mock-body .full { grid-column: 1 / -1; }
+  .form-field label { font-size: 7pt; font-weight: 700; color: var(--gray); display: block; margin-bottom: 2px; }
+  .form-field input, .form-field select {
+    width: 100%; background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px; padding: 4px 7px;
+    font-size: 8pt; font-family: inherit; color: var(--text);
+  }
+  .form-field select.highlight {
+    border-color: var(--purple);
+    background: var(--purple-bg);
+    color: var(--purple);
+    font-weight: 700;
+  }
+  .form-mock-footer {
+    padding: 8px 12px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .form-mock-footer span {
+    padding: 4px 14px; border-radius: 4px; font-size: 8pt; font-weight: 700;
+  }
+  .btn-cancel { background: var(--border); color: var(--text); }
+  .btn-save   { background: var(--purple); color: var(--white); }
+
+  /* ── プレビューモックアップ ── */
+  .preview-mockup {
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--white);
+    margin: 8px 0;
+  }
+  .preview-mock-header {
+    background: var(--purple);
+    color: var(--white);
+    padding: 7px 14px;
+    font-size: 9pt;
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .preview-mock-body {
+    padding: 10px 12px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px 12px;
+  }
+  .preview-row { display: flex; gap: 6px; align-items: baseline; }
+  .preview-label { font-size: 6.5pt; color: var(--gray); font-weight: 700; min-width: 54px; }
+  .preview-val { font-size: 8pt; color: var(--text); }
+  .preview-mock-footer {
+    padding: 8px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+  }
+
+  /* ── 担当カード ── */
+  .tanto-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin: 8px 0;
+  }
+  .tanto-card {
+    background: var(--purple);
+    color: var(--white);
+    border-radius: 8px;
+    text-align: center;
+    overflow: hidden;
+    border-top: 3px solid var(--gold);
+  }
+  .tanto-card .tanto-name {
+    font-size: 14pt; font-weight: 700;
+    padding: 12px 0 8px;
+  }
+  .tanto-card .tanto-desc {
+    background: var(--purple-bg);
+    color: var(--gray);
+    font-size: 7.5pt;
+    padding: 6px;
+    line-height: 1.5;
+  }
+
+  /* ── 返礼ステップ ── */
+  .return-method {
+    display: flex;
+    gap: 0;
+    border-radius: 6px;
+    overflow: hidden;
+    margin: 5px 0;
+    border: 1px solid var(--border);
+  }
+  .return-method .method-badge {
+    background: var(--green);
+    color: var(--white);
+    font-size: 8pt; font-weight: 700;
+    padding: 0 12px;
+    display: flex; align-items: center;
+    white-space: nowrap;
+  }
+  .return-method .method-body {
+    background: var(--green-bg);
+    padding: 8px 12px;
+    flex: 1;
+  }
+  .method-body strong { display: block; color: var(--green); font-size: 8.5pt; }
+  .method-body span { font-size: 8pt; color: var(--text); }
+
+  /* ── 確認ダイアログモック ── */
+  .dialog-mock {
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    background: var(--white);
+    margin: 6px auto;
+    max-width: 280px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  .dialog-mock-title {
+    background: var(--purple);
+    color: var(--white);
+    padding: 6px 12px;
+    font-size: 8.5pt;
+    font-weight: 700;
+    text-align: center;
+  }
+  .dialog-mock-body {
+    padding: 10px 14px;
+    text-align: center;
+  }
+  .dialog-mock-body .d-msg { font-size: 8pt; color: var(--text); margin-bottom: 4px; }
+  .dialog-mock-body .d-name { font-size: 10pt; font-weight: 700; color: var(--purple); margin: 4px 0; }
+  .dialog-mock-footer {
+    padding: 8px 14px;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .d-btn {
+    padding: 4px 14px;
+    border-radius: 4px;
+    font-size: 8pt;
+    font-weight: 700;
+  }
+  .d-btn-cancel { background: var(--border); color: var(--text); }
+  .d-btn-ok     { background: var(--green);  color: var(--white); }
+  .d-btn-undo   { background: #c0392b;       color: var(--white); }
+
+  /* ── 共有フロー ── */
+  .share-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 10px 0;
+  }
+  .share-step {
+    flex: 1;
+    background: var(--purple);
+    color: var(--white);
+    border-radius: 8px;
+    text-align: center;
+    padding: 10px 6px;
+    position: relative;
+  }
+  .share-step.green  { background: #25d366; }
+  .share-step.gold   { background: var(--gold); }
+  .share-step.sgreen { background: var(--green); }
+  .share-step .s-icon  { font-size: 18pt; }
+  .share-step .s-title { font-size: 8.5pt; font-weight: 700; margin-top: 4px; }
+  .share-step .s-desc  { font-size: 7pt; opacity: 0.85; margin-top: 3px; line-height: 1.4; }
+  .share-arrow {
+    color: var(--gray);
+    font-size: 14pt;
+    padding: 0 4px;
+    flex-shrink: 0;
+  }
+
+  /* ── テーブル ── */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 8.5pt; margin: 8px 0; }
+  .data-table th {
+    background: var(--purple);
+    color: var(--white);
+    padding: 6px 8px;
+    text-align: left;
+    font-weight: 700;
+  }
+  .data-table td { padding: 5px 8px; border-bottom: 1px solid var(--border); }
+  .data-table tr:nth-child(even) td { background: var(--purple-bg); }
+  .data-table td:first-child { font-weight: 700; }
+
+  /* ── Q&A ── */
+  .qa-item { margin: 8px 0; }
+  .qa-item .q { font-weight: 700; color: var(--purple); font-size: 9pt; margin-bottom: 2px; }
+  .qa-item .a { font-size: 8.5pt; padding-left: 14px; }
+
+  /* ── セパレーター ── */
+  hr { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
+
+  /* ── 印刷設定 ── */
+  @media print {
+    body { background: #fff; }
+    .print-bar { display: none !important; }
+    .page {
+      box-shadow: none;
+      margin: 0;
+      width: 100%;
+      min-height: auto;
+      page-break-after: auto;
+    }
+    .page-inner { padding: 10mm 14mm 12mm; }
+    .no-break { page-break-inside: avoid; }
+  }
+
+  @page {
+    size: A4;
+    margin: 10mm 12mm;
+  }
+</style>
+</head>
+<body>
+
+<!-- 印刷バー（画面表示時のみ） -->
+<div class="print-bar">
+  <span>🪷 香典返しリスト 使用説明書 ／ 弟夫妻（公治・亜矢）へ</span>
+  <button onclick="window.print()">🖨️ 印刷する</button>
+</div>
+
+<div style="margin-top: 48px;">
+<div class="page">
+  <!-- 表紙ヘッダー -->
+  <div class="cover-header">
+    <div>
+      <span class="flower">🪷</span>
+      <span style="font-size:18pt;font-weight:700">香典返しリスト 使用説明書</span>
+    </div>
+    <div class="sub">弟夫妻（公治・亜矢）へ ／ 香典返し管理アプリの操作ガイド</div>
+    <div class="date">作成：幸博 ／ 2026年4月</div>
+  </div>
+
+  <div class="page-inner">
+
+    <!-- はじめに -->
+    <div class="intro-box">
+      このアプリは、香典をいただいた方への<strong>返礼（香典返し）を管理</strong>するためのツールです。
+      各自がそれぞれ入力・管理するのが基本の使い方で、必要なときだけ情報を共有できる仕組みも備えています。
+      「香典返しリスト.html」というファイル1つをブラウザで開くだけで使えます。インターネット接続・アプリのインストールは一切不要です。
+    </div>
+
+    <!-- ① 起動方法 -->
+    <div class="section-title"><span class="num">1</span>アプリの起動方法</div>
+    <div class="no-break">
+      <div class="step-box">
+        <div class="circle">①</div>
+        <div class="step-title">ファイルを受け取る</div>
+        <div class="step-desc">LINEやメールで届いた「香典返しリスト.html」を、スマホ・PCに保存します。</div>
+      </div>
+      <div class="step-box">
+        <div class="circle">②</div>
+        <div class="step-title">ファイルを開く</div>
+        <div class="step-desc">保存した「香典返しリスト.html」をダブルクリック（スマホはタップ）します。</div>
+      </div>
+      <div class="step-box">
+        <div class="circle">③</div>
+        <div class="step-title">ブラウザで確認</div>
+        <div class="step-desc">Chrome・Edge・Safari などのブラウザで自動的に開きます。これで準備完了！</div>
+      </div>
+      <div class="tip-box">💡 スマホの場合：LINEで受け取ったファイルを「端末に保存」してから、ファイルアプリで開いてください。</div>
+    </div>
+
+    <!-- ② 画面の見方 -->
+    <div class="section-title"><span class="num">2</span>画面の見方</div>
+    <div class="no-break">
+      <div class="mockup-wrap">
+        <!-- ブラウザバー -->
+        <div class="mock-browser-bar">
+          <div class="mock-tab">🪷 香典返しリスト</div>
+        </div>
+        <!-- ① ヘッダー -->
+        <div class="mock-header">
+          <span>🪷 香典返しリスト管理</span>
+          <div class="mock-header-btns">
+            <span class="mock-btn">📥 インポート</span>
+            <span class="mock-btn">📤 JSON保存</span>
+            <span class="mock-btn">📊 CSV出力</span>
+            <span class="mock-btn">🖨️ 印刷</span>
+            <span class="mock-btn gold">＋ 新規追加</span>
+          </div>
+        </div>
+        <div class="annot-row">
+          <span class="annot">① ヘッダー：各種ボタンが並ぶエリア</span>
+        </div>
+        <!-- ② サマリー -->
+        <div class="mock-summary">
+          <div class="mock-card"><div class="c-label">登録件数</div><div class="c-val">12件</div></div>
+          <div class="mock-card gold"><div class="c-label">香典合計</div><div class="c-val">¥248,000</div></div>
+          <div class="mock-card green"><div class="c-label">返礼済</div><div class="c-val" style="color:var(--green)">8件</div></div>
+          <div class="mock-card orange"><div class="c-label">返礼未</div><div class="c-val" style="color:var(--orange)">4件</div></div>
+        </div>
+        <div class="annot-row">
+          <span class="annot">② サマリー：全体の集計がひと目でわかる</span>
+        </div>
+        <!-- ③ 検索バー -->
+        <div class="mock-toolbar">
+          <div class="mock-search-wrap">
+            <div class="mock-search">🔍 氏名・フリガナ・住所で検索...</div>
+            <span class="mock-search-x">✕</span>
+          </div>
+          <div class="mock-select">担当（すべて）▼</div>
+          <div class="mock-select">関係（すべて）▼</div>
+          <div class="mock-select">状況（すべて）▼</div>
+          <div class="mock-clear-btn">絞込クリア</div>
+        </div>
+        <div class="annot-row">
+          <span class="annot">③ 検索・フィルター：検索欄右の「✕」で検索をクリア／「絞込クリア」で全フィルターをリセット</span>
+        </div>
+        <!-- ④ テーブル -->
+        <table class="mock-table">
+          <thead>
+            <tr>
+              <th>氏名</th><th>担当</th><th>関係</th>
+              <th>香典金額</th><th>返礼状況</th><th>返礼品</th><th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>山田 太郎</strong></td><td>幸博</td><td>会社</td>
+              <td style="color:var(--gold);font-weight:700">¥10,000</td>
+              <td><span class="badge-done">✓ 返礼済</span></td>
+              <td>基本セット品</td>
+              <td><span class="mock-action-btn">編集</span><span class="mock-action-btn g">未に戻す</span><span class="mock-action-btn r">削除</span></td>
+            </tr>
+            <tr>
+              <td><strong>鈴木 花子</strong></td><td>亜矢</td><td>友人</td>
+              <td style="color:var(--gold);font-weight:700">¥5,000</td>
+              <td><span class="badge-pend">⏳ 返礼未</span></td>
+              <td>—</td>
+              <td><span class="mock-action-btn">編集</span><span class="mock-action-btn g">済にする</span><span class="mock-action-btn r">削除</span></td>
+            </tr>
+            <tr>
+              <td><strong>田中 一郎</strong></td><td>公治</td><td>親族</td>
+              <td style="color:var(--gold);font-weight:700">¥30,000</td>
+              <td><span class="badge-done">✓ 返礼済</span></td>
+              <td>別の品</td>
+              <td><span class="mock-action-btn">編集</span><span class="mock-action-btn g">未に戻す</span><span class="mock-action-btn r">削除</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="annot-row">
+          <span class="annot">④ 一覧表：行のどこかをクリックすると詳細プレビューが開く／操作ボタンは独立</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ③ 新規追加 -->
+    <div class="section-title"><span class="num">3</span>新規追加の手順</div>
+    <div class="no-break">
+      <p style="font-size:8.5pt;margin-bottom:8px">右上の「＋ 新規追加」ボタンを押すと、入力フォームが開きます。</p>
+      <div class="form-mockup">
+        <div class="form-mock-header">✚ 新規追加</div>
+        <div class="form-mock-body">
+          <div class="form-field">
+            <label>氏名 ＊</label>
+            <input type="text" value="山田 太郎" readonly>
+          </div>
+          <div class="form-field">
+            <label>フリガナ</label>
+            <input type="text" value="ヤマダ タロウ" readonly>
+          </div>
+          <div class="form-field">
+            <label>担当 ＊　←ここで自分を選ぶ</label>
+            <select class="highlight"><option>公治</option></select>
+          </div>
+          <div class="form-field">
+            <label>関係</label>
+            <input type="text" value="会社" readonly>
+          </div>
+          <div class="form-field">
+            <label>香典金額（円）</label>
+            <input type="text" value="10000" readonly>
+          </div>
+          <div class="form-field">
+            <label>受付日</label>
+            <input type="text" value="2025-05-01" readonly>
+          </div>
+          <div class="form-field full">
+            <label>住所</label>
+            <input type="text" value="東京都〇〇区..." readonly>
+          </div>
+        </div>
+        <div class="form-mock-footer">
+          <span class="btn-cancel">キャンセル</span>
+          <span class="btn-save">保存</span>
+        </div>
+      </div>
+
+      <table class="data-table" style="margin-top:10px">
+        <thead>
+          <tr><th>項目</th><th>説明</th><th>入力例</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>氏名 ＊</td><td>香典をいただいた方のお名前（必須）</td><td>山田 太郎</td></tr>
+          <tr><td>フリガナ</td><td>読み仮名（検索で便利）</td><td>ヤマダ タロウ</td></tr>
+          <tr><td>担当 ＊</td><td>家族4名から選択（次のセクション参照）</td><td>公治 / 亜矢 / 幸博 / 千里</td></tr>
+          <tr><td>関係</td><td>その方との関係（選択 or 自由入力）</td><td>会社・友人・親族・近所 など</td></tr>
+          <tr><td>香典金額</td><td>いただいた金額（数字のみ）</td><td>10000</td></tr>
+          <tr><td>住所</td><td>返礼品を郵送する場合に使用</td><td>東京都〇〇区…</td></tr>
+          <tr><td>返礼状況</td><td>返礼が終わったら「済」に変更</td><td>未 → 済</td></tr>
+          <tr><td>返礼品</td><td>2択から選ぶ（個別品の場合は備考に詳細を記入）</td><td>基本セット品 / 別の品（詳細は備考へ）</td></tr>
+          <tr><td>返礼品金額</td><td>空欄からスタート。右の▲▼ボタンを押すと3,000円から入力できる</td><td>3000</td></tr>
+          <tr><td>送付方法</td><td>送り方を選ぶ（手渡し・郵送・宅配便）</td><td>手渡し</td></tr>
+          <tr><td>送付日</td><td>返礼品を送った日付</td><td>2025-05-10</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ④ 担当・関係 -->
+    <div class="section-title"><span class="num">4</span>「担当」と「関係」について</div>
+    <div class="no-break">
+      <p style="font-size:8.5pt;margin-bottom:8px">
+        <strong>担当</strong>＝「香典をくれた方が、家族の誰の知り合いか」を示します。
+        4名から選んでください。
+      </p>
+      <div class="tanto-grid">
+        <div class="tanto-card">
+          <div class="tanto-name">公治</div>
+          <div class="tanto-desc">公治さんの<br>知り合いの場合</div>
+        </div>
+        <div class="tanto-card">
+          <div class="tanto-name">亜矢</div>
+          <div class="tanto-desc">亜矢さんの<br>知り合いの場合</div>
+        </div>
+        <div class="tanto-card">
+          <div class="tanto-name">幸博</div>
+          <div class="tanto-desc">幸博さんの<br>知り合いの場合</div>
+        </div>
+        <div class="tanto-card">
+          <div class="tanto-name">千里</div>
+          <div class="tanto-desc">千里さんの<br>知り合いの場合</div>
+        </div>
+      </div>
+      <p style="font-size:8.5pt;margin-top:10px;margin-bottom:6px">
+        <strong>関係</strong>＝その方がどんな関係かを表します。一覧から選ぶか、自由に入力できます。
+      </p>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px">
+        <span style="background:var(--purple-bg);color:var(--purple);padding:3px 10px;border-radius:12px;font-size:8pt;font-weight:700">会社</span>
+        <span style="background:var(--purple-bg);color:var(--purple);padding:3px 10px;border-radius:12px;font-size:8pt;font-weight:700">友人</span>
+        <span style="background:var(--purple-bg);color:var(--purple);padding:3px 10px;border-radius:12px;font-size:8pt;font-weight:700">親族</span>
+        <span style="background:var(--purple-bg);color:var(--purple);padding:3px 10px;border-radius:12px;font-size:8pt;font-weight:700">近所</span>
+        <span style="background:var(--purple-bg);color:var(--purple);padding:3px 10px;border-radius:12px;font-size:8pt;font-weight:700">学校</span>
+        <span style="background:var(--purple-bg);color:var(--purple);padding:3px 10px;border-radius:12px;font-size:8pt;font-weight:700">趣味・習い事</span>
+        <span style="background:var(--purple-bg);color:var(--purple);padding:3px 10px;border-radius:12px;font-size:8pt;font-weight:700">その他（自由入力）</span>
+      </div>
+      <div class="tip-box">💡 フィルターボタンで「担当：公治」など絞り込んで、自分の担当分だけ表示できます。「絞込クリア」ボタンで全フィルターを一度にリセットできます。</div>
+    </div>
+
+    <!-- ⑤ 詳細確認・編集 -->
+    <div class="section-title"><span class="num">5</span>登録内容の確認・編集</div>
+    <div class="no-break">
+      <p style="font-size:8.5pt;margin-bottom:8px">
+        一覧の<strong>行のどこかをクリック</strong>すると、詳細プレビューが開きます。誤操作防止のため、<strong>編集ボタンを押さないと編集できません。</strong>
+      </p>
+      <div class="preview-mockup">
+        <div class="preview-mock-header">
+          <span>📋 詳細プレビュー</span>
+          <span style="font-size:7.5pt;opacity:0.8">✕ 閉じる</span>
+        </div>
+        <div class="preview-mock-body">
+          <div class="preview-row"><span class="preview-label">氏名</span><span class="preview-val" style="font-weight:700;color:var(--purple)">山田 太郎</span></div>
+          <div class="preview-row"><span class="preview-label">フリガナ</span><span class="preview-val">ヤマダ タロウ</span></div>
+          <div class="preview-row"><span class="preview-label">担当</span><span class="preview-val">幸博</span></div>
+          <div class="preview-row"><span class="preview-label">関係</span><span class="preview-val">会社</span></div>
+          <div class="preview-row"><span class="preview-label">香典金額</span><span class="preview-val" style="color:var(--gold);font-weight:700">¥10,000</span></div>
+          <div class="preview-row"><span class="preview-label">返礼状況</span><span class="preview-val"><span class="badge-done">✓ 返礼済</span></span></div>
+          <div class="preview-row"><span class="preview-label">返礼品</span><span class="preview-val">基本セット品</span></div>
+          <div class="preview-row"><span class="preview-label">返礼品金額</span><span class="preview-val">¥3,000</span></div>
+        </div>
+        <div class="preview-mock-footer">
+          <span style="font-size:7.5pt;color:var(--gray)">← 閲覧のみ</span>
+          <div style="display:flex;gap:6px">
+            <span style="background:var(--purple);color:white;padding:4px 14px;border-radius:4px;font-size:8pt;font-weight:700">✏️ 編集</span>
+            <span style="background:#fde8e8;color:#c0392b;padding:4px 14px;border-radius:4px;font-size:8pt;font-weight:700">🗑 削除</span>
+          </div>
+        </div>
+      </div>
+      <div class="tip-box">💡 一覧の操作ボタン（編集・済にする・削除）はプレビューを開かずに直接操作できます。プレビューから「編集」ボタンを押すとそのまま編集フォームに進めます。</div>
+    </div>
+
+    <!-- ⑥ 返礼済み -->
+    <div class="section-title"><span class="num">6</span>返礼済みにする・取り消す方法</div>
+    <div class="no-break">
+      <div class="return-method">
+        <div class="method-badge">方法①</div>
+        <div class="method-body">
+          <strong>一覧の「済にする」ボタンをクリック</strong>
+          <span>各行の右端にある「済にする」ボタンを押します。確認ダイアログが表示されるので「済にする」を選ぶと返礼済に変わります。送付日が未入力の場合、本日の日付が自動で記録されます。</span>
+        </div>
+      </div>
+      <div class="return-method" style="margin-top:5px">
+        <div class="method-badge">方法②</div>
+        <div class="method-body">
+          <strong>編集画面から詳しく入力する</strong>
+          <span>「編集」ボタンを押してフォームを開き、返礼状況を「済」に変えながら、返礼品・返礼品金額・送付方法・送付日・備考もまとめて入力できます。</span>
+        </div>
+      </div>
+
+      <p style="font-size:8.5pt;margin:10px 0 6px"><strong>確認ダイアログについて</strong>（誤操作防止のため、変更前に必ず確認が表示されます）</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <div style="flex:1;min-width:140px">
+          <p style="font-size:7.5pt;font-weight:700;color:var(--green);text-align:center;margin-bottom:4px">未 → 済 に変更するとき</p>
+          <div class="dialog-mock">
+            <div class="dialog-mock-title">返礼状況の変更</div>
+            <div class="dialog-mock-body">
+              <div class="d-msg">返礼済みに変更しますか？</div>
+              <div class="d-name">山田 太郎</div>
+            </div>
+            <div class="dialog-mock-footer">
+              <span class="d-btn d-btn-cancel">キャンセル</span>
+              <span class="d-btn d-btn-ok">済にする</span>
+            </div>
+          </div>
+        </div>
+        <div style="flex:1;min-width:140px">
+          <p style="font-size:7.5pt;font-weight:700;color:#c0392b;text-align:center;margin-bottom:4px">済 → 未 に戻すとき</p>
+          <div class="dialog-mock">
+            <div class="dialog-mock-title">返礼状況の変更</div>
+            <div class="dialog-mock-body">
+              <div class="d-msg">返礼済みを取り消しますか？<br><span style="font-size:7pt;color:var(--orange)">返礼品・金額・送付情報がクリアされます</span></div>
+              <div class="d-name">山田 太郎</div>
+            </div>
+            <div class="dialog-mock-footer">
+              <span class="d-btn d-btn-cancel">キャンセル</span>
+              <span class="d-btn d-btn-undo">未に戻す</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="note-box" style="margin-top:8px">⚠️ 「未に戻す」を実行すると、返礼品・返礼品金額・送付方法・送付日がすべてクリアされます。</div>
+    </div>
+
+    <!-- ⑦ 共有方法 -->
+    <div class="section-title"><span class="num">7</span>必要なときだけ情報を共有する方法</div>
+    <div class="no-break">
+      <p style="font-size:8.5pt;margin-bottom:10px">
+        基本は各自で入力・管理するスタイルです。「担当」で自分の分だけ絞り込んで使えます。<br>
+        香典返しの全体確認や、どうしても情報を合わせたい場面では、以下の手順で必要な範囲だけ共有できます。
+      </p>
+      <div class="share-flow">
+        <div class="share-step">
+          <div class="s-icon">📤</div>
+          <div class="s-title">JSON保存</div>
+          <div class="s-desc">「JSON保存」で保存先フォルダを選んでダウンロード</div>
+        </div>
+        <div class="share-arrow">▶</div>
+        <div class="share-step green">
+          <div class="s-icon">💬</div>
+          <div class="s-title">LINEで送信</div>
+          <div class="s-desc">必要な相手にのみファイルを送る</div>
+        </div>
+        <div class="share-arrow">▶</div>
+        <div class="share-step gold">
+          <div class="s-icon">📱</div>
+          <div class="s-title">受け取る</div>
+          <div class="s-desc">受け取ったJSONファイルを端末に保存</div>
+        </div>
+        <div class="share-arrow">▶</div>
+        <div class="share-step sgreen">
+          <div class="s-icon">📥</div>
+          <div class="s-title">インポート</div>
+          <div class="s-desc">「インポート」ボタンからファイルを取り込む</div>
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>手順</th><th>操作</th><th>詳細</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>① 保存する</td><td>「📤 JSON保存」を押す</td><td>保存先フォルダを選択するダイアログが開きます（Chrome/Edge）。分かりやすい場所に保存してください。</td></tr>
+          <tr><td>② 送る</td><td>LINEでファイル送信</td><td>「香典返しリスト_○○○○.json」を必要な相手にのみ送ります</td></tr>
+          <tr><td>③ 受け取る</td><td>ファイルを端末に保存</td><td>受け取ったJSONファイルをスマホ・PCの分かりやすい場所に保存</td></tr>
+          <tr><td>④ 取り込む</td><td>「📥 インポート」を押す</td><td>ヘッダーの「インポート」ボタンから保存したJSONを選択します</td></tr>
+        </tbody>
+      </table>
+      <div class="tip-box" style="margin-top:6px">
+        💡 インポート時に「<strong>既存データに追加</strong>」か「<strong>上書き（既存を削除）</strong>」を選べます。通常は「追加」を選んでください。共有は必要と感じたときだけで構いません。
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- Q&A -->
+    <div style="font-size:11pt;font-weight:700;color:var(--purple);margin-bottom:10px">よくある質問 Q&amp;A</div>
+    <div class="qa-item">
+      <div class="q">Q. データはどこに保存されていますか？</div>
+      <div class="a">A. ブラウザの「ローカルストレージ」に自動保存されます。同じブラウザ・同じファイルを開けばいつでも続きから使えます。</div>
+    </div>
+    <div class="qa-item">
+      <div class="q">Q. 自分の担当分だけ見たい</div>
+      <div class="a">A. 検索バー横の「担当」フィルターで自分の名前を選ぶと、自分が入力した分だけ表示されます。他の方の入力内容は気にせず使えます。</div>
+    </div>
+    <div class="qa-item">
+      <div class="q">Q. 全体を確認したいときはどうする？</div>
+      <div class="a">A. 必要なときにJSON保存→インポートの手順（手順⑦）で情報を合わせられます。常に同期する必要はなく、節目で確認したいときだけで十分です。</div>
+    </div>
+    <div class="qa-item">
+      <div class="q">Q. 誤って削除してしまいました</div>
+      <div class="a">A. 削除は元に戻せません。定期的に「JSON保存」でご自身のデータをバックアップしておくことをお勧めします。</div>
+    </div>
+    <div class="qa-item">
+      <div class="q">Q. CSVとJSONの違いは？</div>
+      <div class="a">A. JSON（.json）はバックアップや情報共有のとき用です。CSV（.csv）はExcelで開いて印刷・加工したいときに使います。</div>
+    </div>
+    <div class="qa-item">
+      <div class="q">Q. 返礼品金額はどう入力する？</div>
+      <div class="a">A. 金額欄は最初から空欄です。数字を直接入力するか、右側の▲ボタンを押すと3,000円からスタートして100円刻みで増やせます。</div>
+    </div>
+
+    <!-- フッター -->
+    <div style="margin-top:18px;padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:7.5pt;color:var(--gray)">
+      <span>🪷 香典返しリスト 使用説明書</span>
+      <span>何かあれば幸博まで連絡ください</span>
+    </div>
+
+  </div><!-- /page-inner -->
+</div><!-- /page -->
+</div>
+
+</body>
+</html>
