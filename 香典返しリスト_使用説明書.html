@@ -533,6 +533,45 @@
   .qa-item .q { font-weight: 700; color: var(--purple); font-size: 9pt; margin-bottom: 2px; }
   .qa-item .a { font-size: 8.5pt; padding-left: 14px; }
 
+  /* ── GitHubボックス ── */
+  .github-url-box {
+    background: #f6f8fa;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-family: monospace;
+    font-size: 8.5pt;
+    color: #0969da;
+    margin: 6px 0;
+    word-break: break-all;
+  }
+  .github-update-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 8px 0;
+  }
+  .gh-step {
+    flex: 1;
+    background: #24292f;
+    color: var(--white);
+    border-radius: 8px;
+    text-align: center;
+    padding: 8px 4px;
+  }
+  .gh-step .gh-icon  { font-size: 14pt; }
+  .gh-step .gh-title { font-size: 8pt; font-weight: 700; margin-top: 3px; }
+  .gh-step .gh-desc  { font-size: 6.5pt; opacity: 0.8; margin-top: 2px; line-height: 1.4; }
+  .caution-box {
+    background: #fff5f5;
+    border-left: 3px solid #c0392b;
+    padding: 7px 12px;
+    border-radius: 0 5px 5px 0;
+    font-size: 8.5pt;
+    color: #c0392b;
+    margin: 6px 0;
+  }
+
   /* ── セパレーター ── */
   hr { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
 
@@ -583,7 +622,7 @@
     <div class="intro-box">
       このアプリは、香典をいただいた方への<strong>返礼（香典返し）を管理</strong>するためのツールです。
       各自がそれぞれ入力・管理するのが基本の使い方で、必要なときだけ情報を共有できる仕組みも備えています。
-      「香典返しリスト.html」というファイル1つをブラウザで開くだけで使えます。インターネット接続・アプリのインストールは一切不要です。
+      <strong>URLをブラウザで開くだけ</strong>で使えます。ファイルのダウンロードやアプリのインストールは一切不要です。
     </div>
 
     <!-- ① 起動方法 -->
@@ -591,20 +630,16 @@
     <div class="no-break">
       <div class="step-box">
         <div class="circle">①</div>
-        <div class="step-title">ファイルを受け取る</div>
-        <div class="step-desc">LINEやメールで届いた「香典返しリスト.html」を、スマホ・PCに保存します。</div>
+        <div class="step-title">URLを開く</div>
+        <div class="step-desc">以下のURLをブラウザのアドレスバーに入力するか、幸博から送られたリンクをタップします。</div>
       </div>
+      <div class="github-url-box" style="margin:4px 0 8px">https://enoha21.github.io/koden-kaeshi/香典返しリスト.html</div>
       <div class="step-box">
         <div class="circle">②</div>
-        <div class="step-title">ファイルを開く</div>
-        <div class="step-desc">保存した「香典返しリスト.html」をダブルクリック（スマホはタップ）します。</div>
+        <div class="step-title">ブラウザで表示される</div>
+        <div class="step-desc">Chrome・Edge・Safari などのブラウザでアプリが開きます。これで準備完了！</div>
       </div>
-      <div class="step-box">
-        <div class="circle">③</div>
-        <div class="step-title">ブラウザで確認</div>
-        <div class="step-desc">Chrome・Edge・Safari などのブラウザで自動的に開きます。これで準備完了！</div>
-      </div>
-      <div class="tip-box">💡 スマホの場合：LINEで受け取ったファイルを「端末に保存」してから、ファイルアプリで開いてください。</div>
+      <div class="tip-box">💡 ブックマーク（お気に入り）に登録しておくと、次回からすぐ開けます。スマホの場合はホーム画面に追加すると便利です。</div>
     </div>
 
     <!-- ② 画面の見方 -->
@@ -926,6 +961,56 @@
       </div>
     </div>
 
+    <!-- ⑧ GitHub -->
+    <div class="section-title"><span class="num">8</span>GitHubでのアクセス・更新方法</div>
+    <div class="no-break">
+      <p style="font-size:8.5pt;margin-bottom:8px">
+        このアプリはインターネット上に公開されています。以下のURLをブラウザで開くだけで使えます。ファイルを受け取る必要はありません。
+      </p>
+
+      <p style="font-size:8pt;font-weight:700;color:var(--purple);margin-bottom:3px">🌐 アプリ本体</p>
+      <div class="github-url-box">https://enoha21.github.io/koden-kaeshi/香典返しリスト.html</div>
+      <p style="font-size:8pt;font-weight:700;color:var(--purple);margin:8px 0 3px">📖 使用説明書</p>
+      <div class="github-url-box">https://enoha21.github.io/koden-kaeshi/香典返しリスト_使用説明書.html</div>
+
+      <div class="tip-box" style="margin-top:8px">💡 URLをブックマーク（お気に入り）に登録しておくと、次回からすぐ開けます。</div>
+
+      <p style="font-size:8.5pt;font-weight:700;margin:12px 0 6px">アプリが更新されたときは？</p>
+      <p style="font-size:8.5pt;margin-bottom:8px">
+        幸博がアプリを修正してGitHubにアップロードすると、<strong>同じURLで自動的に最新版が反映</strong>されます。公治さん・亜矢さん側での操作は不要です。
+      </p>
+      <div class="github-update-flow">
+        <div class="gh-step">
+          <div class="gh-icon">🛠️</div>
+          <div class="gh-title">幸博が修正</div>
+          <div class="gh-desc">アプリを改善・変更</div>
+        </div>
+        <div class="share-arrow">▶</div>
+        <div class="gh-step">
+          <div class="gh-icon">📤</div>
+          <div class="gh-title">GitHubに上書き</div>
+          <div class="gh-desc">同じファイル名でアップロード</div>
+        </div>
+        <div class="share-arrow">▶</div>
+        <div class="gh-step">
+          <div class="gh-icon">🌐</div>
+          <div class="gh-title">自動で反映</div>
+          <div class="gh-desc">1〜2分後にURLへ反映</div>
+        </div>
+        <div class="share-arrow">▶</div>
+        <div class="gh-step" style="background:var(--green)">
+          <div class="gh-icon">✅</div>
+          <div class="gh-title">最新版を使える</div>
+          <div class="gh-desc">URLを開き直すだけでOK</div>
+        </div>
+      </div>
+
+      <p style="font-size:8.5pt;font-weight:700;margin:12px 0 6px">注意事項</p>
+      <div class="caution-box">⚠️ <strong>データは自動で同期されません。</strong>各自のブラウザ内に保存されるため、他の人の入力内容は見えません。データの共有は手順⑦（JSON保存→インポート）で行ってください。</div>
+      <div class="caution-box" style="margin-top:4px">⚠️ <strong>アプリのソースコード（プログラム）は誰でも見られます。</strong>ただし入力したデータ（名前・住所など）は各自のブラウザ内にのみあるため、外部から見られることはありません。</div>
+      <div class="caution-box" style="margin-top:4px">⚠️ <strong>ブラウザやデバイスを変えるとデータは引き継がれません。</strong>スマホで入力したデータはPCには表示されません。データを移行するにはJSON保存→インポートを使ってください。</div>
+    </div>
+
     <hr>
 
     <!-- Q&A -->
@@ -953,6 +1038,18 @@
     <div class="qa-item">
       <div class="q">Q. 返礼品金額はどう入力する？</div>
       <div class="a">A. 金額欄は最初から空欄です。数字を直接入力するか、右側の▲ボタンを押すと3,000円からスタートして100円刻みで増やせます。</div>
+    </div>
+    <div class="qa-item">
+      <div class="q">Q. URLを開いたら以前入力したデータがない</div>
+      <div class="a">A. データはブラウザごとに保存されます。別のブラウザやデバイスで開いた場合はデータが表示されません。以前使ったブラウザで開き直すか、JSON保存したファイルをインポートしてください。</div>
+    </div>
+    <div class="qa-item">
+      <div class="q">Q. アプリが更新されたらデータはどうなる？</div>
+      <div class="a">A. アプリが更新されても、ブラウザに保存済みのデータはそのまま残ります。URLを開き直すだけで最新版のアプリで続きから使えます。</div>
+    </div>
+    <div class="qa-item">
+      <div class="q">Q. URLを他の人に見られたらデータも見られる？</div>
+      <div class="a">A. URLを知っている人はアプリを開けますが、表示されるのは空の状態です。入力したデータはあなたのブラウザの中にのみあるため、URLを共有しても他の人にデータが見られることはありません。</div>
     </div>
 
     <!-- フッター -->
