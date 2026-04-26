@@ -120,7 +120,10 @@
   thead th:hover { background: var(--primary-light); }
   thead th .sort-icon { margin-left: 4px; opacity: 0.6; font-size: 0.7rem; }
   tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; cursor: pointer; }
-  tbody tr:hover { background: #f5f0fa; }
+  tbody tr.row-done { background: #eaf6ef; }
+  tbody tr.row-pending { background: #fff8f0; }
+  tbody tr.row-done:hover { background: #d4edde; }
+  tbody tr.row-pending:hover { background: #fdecd8; }
   tbody td { padding: 9px 10px; vertical-align: middle; }
 
   .badge {
@@ -583,7 +586,7 @@ function render() {
   } else {
     document.getElementById('emptyState').style.display = 'none';
     tbody.innerHTML = page.map(r => `
-      <tr onclick="openPreview('${r.id}')">
+      <tr onclick="openPreview('${r.id}')" class="${r.returnStatus === '済' ? 'row-done' : 'row-pending'}">
         <td class="name-cell">
           ${esc(r.name)}
           ${r.furigana ? `<div class="furigana">${esc(r.furigana)}</div>` : ''}
