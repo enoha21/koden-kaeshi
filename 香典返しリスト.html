@@ -341,7 +341,14 @@
       </div>
       <div class="form-group">
         <label for="f_amount">香典金額（円）</label>
-        <input type="number" id="f_amount" placeholder="10000" min="0" step="1000">
+        <input type="number" id="f_amount" placeholder="10000" min="0" step="1000" autocomplete="off">
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:5px">
+          <button type="button" onclick="document.getElementById('f_amount').value=3000" style="flex:1;min-width:56px;padding:4px 2px;border:1px solid var(--border);border-radius:4px;background:var(--purple-bg);color:var(--purple);font-size:0.8rem;cursor:pointer;">3,000</button>
+          <button type="button" onclick="document.getElementById('f_amount').value=5000" style="flex:1;min-width:56px;padding:4px 2px;border:1px solid var(--border);border-radius:4px;background:var(--purple-bg);color:var(--purple);font-size:0.8rem;cursor:pointer;">5,000</button>
+          <button type="button" onclick="document.getElementById('f_amount').value=10000" style="flex:1;min-width:56px;padding:4px 2px;border:1px solid var(--border);border-radius:4px;background:var(--purple-bg);color:var(--purple);font-size:0.8rem;cursor:pointer;">10,000</button>
+          <button type="button" onclick="document.getElementById('f_amount').value=30000" style="flex:1;min-width:56px;padding:4px 2px;border:1px solid var(--border);border-radius:4px;background:var(--purple-bg);color:var(--purple);font-size:0.8rem;cursor:pointer;">30,000</button>
+          <button type="button" onclick="document.getElementById('f_amount').value=50000" style="flex:1;min-width:56px;padding:4px 2px;border:1px solid var(--border);border-radius:4px;background:var(--purple-bg);color:var(--purple);font-size:0.8rem;cursor:pointer;">50,000</button>
+        </div>
       </div>
       <div class="form-group full">
         <label for="f_address">住所</label>

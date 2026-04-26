@@ -752,6 +752,13 @@
           <div class="form-field">
             <label>香典金額（円）</label>
             <input type="text" value="10000" readonly>
+            <div style="display:flex;gap:3px;flex-wrap:wrap;margin-top:4px">
+              <span style="flex:1;text-align:center;background:var(--purple-bg);color:var(--purple);border:1px solid var(--border);border-radius:3px;padding:2px 1px;font-size:6.5pt;font-weight:700">3,000</span>
+              <span style="flex:1;text-align:center;background:var(--purple-bg);color:var(--purple);border:1px solid var(--border);border-radius:3px;padding:2px 1px;font-size:6.5pt;font-weight:700">5,000</span>
+              <span style="flex:1;text-align:center;background:var(--purple-bg);color:var(--purple);border:1px solid var(--border);border-radius:3px;padding:2px 1px;font-size:6.5pt;font-weight:700">10,000</span>
+              <span style="flex:1;text-align:center;background:var(--purple-bg);color:var(--purple);border:1px solid var(--border);border-radius:3px;padding:2px 1px;font-size:6.5pt;font-weight:700">30,000</span>
+              <span style="flex:1;text-align:center;background:var(--purple-bg);color:var(--purple);border:1px solid var(--border);border-radius:3px;padding:2px 1px;font-size:6.5pt;font-weight:700">50,000</span>
+            </div>
           </div>
           <div class="form-field">
             <label>受付日</label>
@@ -777,11 +784,11 @@
           <tr><td>フリガナ</td><td>読み仮名（検索で便利）</td><td>ヤマダ タロウ</td></tr>
           <tr><td>担当 ＊</td><td>家族4名から選択（次のセクション参照）</td><td>公治 / 亜矢 / 幸博 / 千里</td></tr>
           <tr><td>関係</td><td>その方との関係（選択 or 自由入力）</td><td>会社・友人・親族・近所 など</td></tr>
-          <tr><td>香典金額</td><td>いただいた金額（数字のみ）</td><td>10000</td></tr>
+          <tr><td>香典金額</td><td>いただいた金額。入力欄下のボタン（3,000／5,000／10,000／30,000／50,000）でワンタップ入力も可能</td><td>10000</td></tr>
           <tr><td>住所</td><td>返礼品を郵送する場合に使用</td><td>東京都〇〇区…</td></tr>
           <tr><td>返礼状況</td><td>返礼が終わったら「済」に変更</td><td>未 → 済</td></tr>
           <tr><td>返礼品</td><td>2択から選ぶ（個別品の場合は備考に詳細を記入）</td><td>基本セット品 / 別の品（詳細は備考へ）</td></tr>
-          <tr><td>返礼品金額</td><td>空欄からスタート。右の▲▼ボタンを押すと3,000円から入力できる</td><td>3000</td></tr>
+          <tr><td>返礼品金額</td><td>空欄からスタート。数字を直接入力する</td><td>3000</td></tr>
           <tr><td>送付方法</td><td>送り方を選ぶ（手渡し・郵送・宅配便）</td><td>手渡し</td></tr>
           <tr><td>送付日</td><td>返礼品を送った日付</td><td>2025-05-10</td></tr>
         </tbody>
@@ -1036,8 +1043,16 @@
       <div class="a">A. JSON（.json）はバックアップや情報共有のとき用です。CSV（.csv）はExcelで開いて印刷・加工したいときに使います。</div>
     </div>
     <div class="qa-item">
+      <div class="q">Q. 香典金額はどう入力する？</div>
+      <div class="a">A. 直接数字を入力するか、入力欄の下に表示されるプリセットボタン（3,000／5,000／10,000／30,000／50,000）をタップするとワンタップで入力できます。スマホでも使いやすい設計です。</div>
+    </div>
+    <div class="qa-item">
       <div class="q">Q. 返礼品金額はどう入力する？</div>
-      <div class="a">A. 金額欄は最初から空欄です。数字を直接入力するか、右側の▲ボタンを押すと3,000円からスタートして100円刻みで増やせます。</div>
+      <div class="a">A. 空欄からスタートします。金額を直接入力してください。</div>
+    </div>
+    <div class="qa-item">
+      <div class="q">Q. 入力中に誤って画面の外をタップしてしまった</div>
+      <div class="a">A. 入力フォームは画面外をタップしても閉じません。「キャンセル」ボタンを押したときのみ閉じます。誤タップを気にせず入力できます。</div>
     </div>
     <div class="qa-item">
       <div class="q">Q. URLを開いたら以前入力したデータがない</div>
