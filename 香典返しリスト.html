@@ -374,7 +374,7 @@
       </div>
       <div class="form-group">
         <label for="f_returnItem">返礼品</label>
-        <select id="f_returnItem">
+        <select id="f_returnItem" onchange="onReturnItemChange()">
           <option value="">—（未選択）</option>
           <option value="基本セット品">基本セット品</option>
           <option value="別の品">別の品（詳細は備考へ）</option>
@@ -667,6 +667,13 @@ function openEdit(id) {
   document.getElementById('f_returnDate').value = r.returnDate || '';
   document.getElementById('f_note').value = r.note || '';
   document.getElementById('editOverlay').classList.add('active');
+}
+
+function onReturnItemChange() {
+  const item = document.getElementById('f_returnItem').value;
+  if (item === '基本セット品') {
+    document.getElementById('f_returnAmount').value = 1500;
+  }
 }
 
 function clearForm() {
