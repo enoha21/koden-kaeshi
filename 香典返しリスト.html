@@ -303,7 +303,7 @@
 </div>
 
 <!-- 追加・編集モーダル -->
-<div class="overlay" id="editOverlay" onclick="if(event.target===this)closeEdit()">
+<div class="overlay" id="editOverlay">
   <div class="modal">
     <h2 id="modalTitle">新規追加</h2>
     <div class="form-grid">
@@ -649,12 +649,11 @@ function openEdit(id) {
 
 function clearForm() {
   ['f_name','f_furigana','f_tanto','f_amount','f_address','f_phone',
-   'f_receiveDate','f_returnStatus','f_returnItem',
+   'f_receiveDate','f_returnStatus','f_returnItem','f_returnAmount',
    'f_deliveryMethod','f_returnDate','f_note'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
-  document.getElementById('f_returnAmount').value = '3000';
 }
 
 function openPreview(id) {
@@ -948,9 +947,9 @@ function showToast(msg) {
 load();
 render();
 
-// 返礼品金額：空欄でスピナー操作した場合のみ3000を起点にする（直接入力は影響しない）
+// 香典金額：空欄でスピナー操作した場合のみ3000を起点にする（直接入力は影響しない）
 (function() {
-  const el = document.getElementById('f_returnAmount');
+  const el = document.getElementById('f_amount');
   el.addEventListener('mousedown', function() {
     if (!el.value) el._spinnerPending = true;
   });
