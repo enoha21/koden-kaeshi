@@ -181,12 +181,28 @@
 
   /* インポート */
   .import-area {
-    border: 2px dashed var(--border); border-radius: 8px; padding: 20px;
-    text-align: center; cursor: pointer; transition: border-color 0.2s;
-    color: var(--text-muted); font-size: 0.85rem; margin-bottom: 12px;
+    border: 2px dashed var(--border); border-radius: 10px; padding: 28px 20px;
+    text-align: center; cursor: pointer; transition: all 0.2s;
+    color: var(--text-muted); font-size: 0.85rem; margin-bottom: 14px;
+    background: var(--surface); display: block;
   }
-  .import-area:hover { border-color: var(--primary); color: var(--primary); }
+  .import-area:hover { border-color: var(--primary); color: var(--primary); background: #f5f0fa; }
   .import-area input[type=file] { display: none; }
+  .import-area .import-icon { font-size: 2.4rem; margin-bottom: 8px; line-height: 1; }
+  .import-area .import-main { font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; }
+  .import-area .import-sub  { font-size: 0.75rem; opacity: 0.6; }
+  .import-mode-wrap {
+    display: flex; gap: 0; border: 1px solid var(--border); border-radius: 8px;
+    overflow: hidden; margin-bottom: 16px;
+  }
+  .import-mode-wrap label {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px;
+    padding: 10px 8px; font-size: 0.83rem; cursor: pointer;
+    transition: background 0.15s; user-select: none;
+  }
+  .import-mode-wrap label:first-child { border-right: 1px solid var(--border); }
+  .import-mode-wrap input[type=radio] { accent-color: var(--primary); width: 15px; height: 15px; }
+  .import-mode-wrap label:has(input:checked) { background: var(--primary-bg); color: var(--primary); font-weight: 700; }
 
   /* 空状態 */
   .empty-state { text-align: center; padding: 50px 20px; color: var(--text-muted); }
@@ -449,24 +465,23 @@
 
 <!-- インポートモーダル -->
 <div class="overlay" id="importOverlay" onclick="if(event.target===this)closeImport()">
-  <div class="modal" style="max-width:440px">
+  <div class="modal" style="max-width:420px">
     <h2>📥 データのインポート</h2>
-    <p style="font-size:0.83rem;color:var(--text-muted);margin-bottom:14px">
-      このアプリで出力したJSONファイルを読み込みます。<br>
-      既存データに<strong>追加</strong>するか、<strong>上書き</strong>するか選べます。
+    <p style="font-size:0.83rem;color:var(--text-muted);margin-bottom:16px">
+      JSON保存で出力したファイルを読み込みます。
     </p>
     <label class="import-area" for="importFile">
-      <div style="font-size:1.8rem;margin-bottom:6px">📂</div>
-      <div>クリックしてJSONファイルを選択</div>
-      <div style="font-size:0.74rem;margin-top:4px;opacity:0.7">または ここにドラッグ＆ドロップ</div>
+      <div class="import-icon">📂</div>
+      <div class="import-main">クリックしてJSONファイルを選択</div>
+      <div class="import-sub">または ここにドラッグ＆ドロップ</div>
       <input type="file" id="importFile" accept=".json" onchange="handleImportFile(event)">
     </label>
-    <div id="importPreview" style="font-size:0.82rem;color:var(--text-muted);margin-bottom:12px;display:none"></div>
-    <div style="display:flex;gap:10px;margin-bottom:16px">
-      <label style="display:flex;align-items:center;gap:6px;font-size:0.83rem;cursor:pointer">
+    <div id="importPreview" style="font-size:0.85rem;margin-bottom:14px;padding:8px 12px;border-radius:6px;display:none"></div>
+    <div class="import-mode-wrap">
+      <label>
         <input type="radio" name="importMode" value="add" checked> 既存データに追加
       </label>
-      <label style="display:flex;align-items:center;gap:6px;font-size:0.83rem;cursor:pointer">
+      <label>
         <input type="radio" name="importMode" value="overwrite"> 上書き（既存を削除）
       </label>
     </div>
@@ -924,11 +939,12 @@ function handleImportFile(e) {
       if (!Array.isArray(importData)) throw new Error();
       const prev = document.getElementById('importPreview');
       prev.textContent = `✅ ${importData.length}件のデータを認識しました`;
-      prev.style.display = '';
+      prev.style.cssText = 'display:block;font-size:0.85rem;margin-bottom:14px;padding:8px 12px;border-radius:6px;background:#e8f5ee;color:#2d7a4f;font-weight:600;';
       document.getElementById('importBtn').disabled = false;
     } catch {
-      document.getElementById('importPreview').textContent = '❌ 読み込み失敗：正しいJSONファイルを選択してください';
-      document.getElementById('importPreview').style.display = '';
+      const prev = document.getElementById('importPreview');
+      prev.textContent = '❌ 読み込み失敗：正しいJSONファイルを選択してください';
+      prev.style.cssText = 'display:block;font-size:0.85rem;margin-bottom:14px;padding:8px 12px;border-radius:6px;background:#fde8e8;color:#c0392b;font-weight:600;';
       importData = null;
       document.getElementById('importBtn').disabled = true;
     }
