@@ -495,7 +495,19 @@ function load() {
   catch { records = []; }
 }
 function save() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+  } catch(e) {
+    showBrowserWarning();
+  }
+}
+function showBrowserWarning() {
+  if (document.getElementById('browserWarning')) return;
+  const el = document.createElement('div');
+  el.id = 'browserWarning';
+  el.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;background:#c0392b;color:#fff;padding:12px 16px;font-size:0.9rem;line-height:1.5;text-align:center;';
+  el.innerHTML = '⚠️ このブラウザではデータを保存できません。<br>LINEのブラウザではなく <strong>Chrome または Safari</strong> で開き直してください。<br><span style="font-size:0.8rem;opacity:0.9">（画面右下または右上の「…」→「ブラウザで開く」）</span>';
+  document.body.prepend(el);
 }
 function genId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
@@ -954,6 +966,15 @@ function showToast(msg) {
 }
 
 // ---- 初期化 ----
+// 起動時にlocalStorage利用可否を確認
+(function() {
+  try {
+    localStorage.setItem('__test__', '1');
+    localStorage.removeItem('__test__');
+  } catch(e) {
+    showBrowserWarning();
+  }
+})();
 load();
 render();
 
